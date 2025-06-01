@@ -49,13 +49,12 @@ const getAllTasks = () => {
       throw new Error(`No tasks found`);
     }
 
-    tasks.forEach((task, index) => {
+    console.log(`=== Your Task${tasks.length > 1 ? "s" : ""} ===`);
+    tasks.forEach((task) => {
       console.log(`
-=== Your Task${tasks.length > 1 ? 's' : ''} ===
 [${task.id}] ${task.title} (${task.completed === false ? 'Pending' : 'Completed'})
     Description: ${task.description}
-    Created: ${task.createdAt}
-        `);
+    Created: ${task.createdAt}`);
     });
     return tasks;
 
@@ -99,8 +98,46 @@ const markTaskComplete = (taskId) => {
   }
 };
 
-const deleteTask = (taskId) => {
-  
+const deleteTask = (option) => {
+  try {
+    if (option !== "all") {
+      const taskId = Number(option);
+
+      if (isNaN(taskId)) {
+        throw new Error("ID must be a number");
+      }
+
+      checkTasksFile();
+
+      const tasks = JSON.parse(fs.readFileSync(tasksPath));
+
+      const taskToDelete = tasks.find((task) => task.id === taskId);
+
+      if (taskToDelete) {
+        const filteredTasks = tasks.filter((task) => task.id !== taskId);
+
+        fs.writeFileSync(tasksPath, JSON.stringify(filteredTasks));
+
+        console.log(`Task "${taskToDelete.title}" deleted successfully`);
+        return taskToDelete;
+      } else {
+        throw new Error(`There is no task with the ID of ${taskId}`);
+      }
+    } else {
+      // Handle deleting all tasks
+      checkTasksFile();
+      const tasks = JSON.parse(fs.readFileSync(tasksPath));
+
+      if (tasks.length === 0) {
+        throw new Error("No task currently in memory");
+      }
+
+      fs.writeFileSync(tasksPath, JSON.stringify([]));
+      console.log("All tasks deleted successfully");
+    }
+  } catch (error) {
+    throw error;
+  }
 };
 
 const saveTaskstoFile = () => {

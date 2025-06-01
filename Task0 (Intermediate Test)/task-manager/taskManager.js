@@ -46,7 +46,7 @@ const getAllTasks = () => {
     checkTasksFile();
 
     // const tasks = JSON.parse(fs.readFileSync(tasksPath));
-    const tasks = loadTasksFromFile();
+    const tasks = loadTasksFromFile(tasksPath);
     if (tasks.length < 1) {
       throw new Error(`No tasks found`);
     }
@@ -77,7 +77,7 @@ const markTaskComplete = (taskId) => {
     checkTasksFile();
 
     // const tasks = JSON.parse(fs.readFileSync(tasksPath));
-    const tasks = loadTasksFromFile();
+    const tasks = loadTasksFromFile(tasksPath);
 
     const taskToUpdate = tasks.find((task) => task.id === taskId);
 
@@ -113,7 +113,7 @@ const deleteTask = (option) => {
       checkTasksFile();
 
       // const tasks = JSON.parse(fs.readFileSync(tasksPath));
-      const tasks = loadTasksFromFile();
+      const tasks = loadTasksFromFile(tasksPath);
 
       const taskToDelete = tasks.find((task) => task.id === taskId);
 
@@ -132,7 +132,7 @@ const deleteTask = (option) => {
       // Handle deleting all tasks
       checkTasksFile();
       // const tasks = JSON.parse(fs.readFileSync(tasksPath));
-      const tasks = loadTasksFromFile();
+      const tasks = loadTasksFromFile(tasksPath);
 
       if (tasks.length === 0) {
         throw new Error("No task currently in memory");
@@ -151,7 +151,7 @@ const saveTaskstoFile = (tasksPath, tasks) => {
   return fs.writeFileSync(tasksPath, JSON.stringify(tasks));
 };
 
-const loadTasksFromFile = () => {
+const loadTasksFromFile = (tasksPath) => {
   return JSON.parse(fs.readFileSync(tasksPath));
 };
 
@@ -166,4 +166,6 @@ module.exports = {
   getAllTasks,
   markTaskComplete,
   deleteTask,
+  loadTasksFromFile,
+  checkTasksFile
 };

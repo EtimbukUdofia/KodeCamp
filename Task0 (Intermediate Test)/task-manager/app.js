@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 
 const readline = require("readline");
+const fs = require("fs");
+const path = require("path");
+const http = require("http");
+
 const {
-  addTask, getAllTasks, markTaskComplete, deleteTask } = require("./taskManager.js");
+  addTask, getAllTasks, markTaskComplete, deleteTask, 
+  loadTasksFromFile,
+  checkTasksFile} = require("./taskManager.js");
 
 // CLI logic
 const args = process.argv.slice(2);
@@ -83,6 +89,82 @@ switch (command) {
     break;
 
   case "server":
+    const tasksPath = path.join(__dirname, "tasks.json");
+
+    const server = http.createServer((req, res) => {
+      const { method, url } = req;
+
+      try {
+          // Enable CORS and set JSON response headers
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Content-Type", "application/json");
+
+        if (method === "GET" && url === "/") {
+          res.writeHead(200, { "Content-Type": "text/plain" });
+          res.end("Welcome to the Task API");
+        } else if (method === "GET" && url === "/tasks") {
+          try {
+            checkTasksFile();
+            const tasks = loadTasksFromFile(tasksPath);
+  
+            res.writeHead(200);
+            res.end(JSON.stringify(tasks));
+          } catch (error) {
+            res.writeHead(404);
+            res.end(JSON.stringify({ error: "No item currently in memory" }));
+          }
+        } else if (method === "POST" && url === "/tasks") {
+          let body = "";
+
+          req.on("data", (chunk) => {
+            body += chunk.toString();
+          });
+
+          req.on("end", () => {
+            try {
+              const task = JSON.parse(body);
+              if (!task || !task.title || !task.description) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Task must have a title and a description" }));
+              } else {
+                const newTask = addTask(task.title, task.description);
+                res.writeHead(201);
+                res.end(JSON.stringify({ message: "Task added", newTask }));
+              }
+            } catch (e) {
+              res.writeHead(400);
+              res.end(JSON.stringify({ error: "Invalid JSON body" }));
+            }
+          });
+
+          req.on('error', err => {
+            console.error('Request Error:', err.message);
+            res.writeHead(500);
+            res.end(JSON.stringify({error: "Server error during request handling"}))
+          })
+        } else {
+          res.writeHead(404);
+          res.end(JSON.stringify({ error: "Not Found" }));
+        }
+      } catch (error) {
+        console.error(`Unexpected server error:`, error);
+        res.writeHead(500);
+        res.end(JSON.stringify({ error: 'Internal Server Error' }));
+      }
+
+    });
+
+      
+
+    server.on('error', (err) => {
+      console.error('Server failed to start:', err.message);
+      process.exit(1);
+    });
+
+    // Start server
+    server.listen(3000, () => {
+      console.log("Server running at http://localhost:3000");
+    });
 
     break;
   

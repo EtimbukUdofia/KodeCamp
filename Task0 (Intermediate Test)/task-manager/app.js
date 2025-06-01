@@ -30,18 +30,6 @@ switch (command) {
     }
     break;
 
-  case "update":
-    try {
-      if (args.length < 3) {
-        throw new Error("The 'update' command needs an id and a description");
-      }
-
-      updateTask(args[1], { description: args[2] });
-    } catch (error) {
-      console.log(error.message);
-    }
-    break;
-
   case "delete":
     try {
       if (args.length < 2) {
@@ -83,25 +71,13 @@ switch (command) {
     }
     break;
 
-  case "mark-in-progress":
+  case "complete":
     try {
       if (args.length < 2) {
-        throw new Error("The 'mark-in-progress' command needs an id option");
+        throw new Error("The 'complete' command needs an id option");
       }
 
-      updateTask(args[1], { status: "in-progress" });
-    } catch (error) {
-      console.log(error.message);
-    }
-    break;
-
-  case "mark-done":
-    try {
-      if (args.length < 2) {
-        throw new Error("The 'mark-done' command needs an id option");
-      }
-
-      updateTask(args[1], { status: "done" });
+      markTaskComplete(args[1]);
     } catch (error) {
       console.log(error.message);
     }

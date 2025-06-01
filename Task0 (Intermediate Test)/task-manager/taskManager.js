@@ -65,7 +65,38 @@ const getAllTasks = () => {
 };
 
 const markTaskComplete = (taskId) => {
-  
+  try {
+  taskId = Number(taskId);
+    let updatedTask;
+
+    if (isNaN(taskId)) {
+      throw new Error("ID must be a number");
+    }
+
+    checkTasksFile();
+
+    const tasks = JSON.parse(fs.readFileSync(tasksPath));
+
+    const taskToUpdate = tasks.find((task) => task.id === taskId);
+
+    if (taskToUpdate) {
+      tasks.forEach((task) => {
+        if (task.id === taskId) {
+          task.completed = true;
+          updatedTask = task;
+        }
+      });
+    } else {
+      throw new Error(`There is no task with the ID of ${taskId}`);
+    }
+
+    fs.writeFileSync(tasksPath, JSON.stringify(tasks));
+    console.log(`Task "${updatedTask.title}" marked as complete`);
+
+    return updatedTask;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const deleteTask = (taskId) => {

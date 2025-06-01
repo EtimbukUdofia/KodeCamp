@@ -32,7 +32,8 @@ const addTask = (title, description) => {
 
     tasks = [...tasks, newTask];
 
-    fs.writeFileSync(tasksPath, JSON.stringify(tasks));
+    // fs.writeFileSync(tasksPath, JSON.stringify(tasks));
+    saveTaskstoFile(tasksPath, tasks);
     console.log("Task added successfully!\n", `ID: ${newTask.id}, Title: "${newTask.title}"`);
     return newTask;
   } catch (error) {
@@ -44,7 +45,8 @@ const getAllTasks = () => {
   try {
     checkTasksFile();
 
-    const tasks = JSON.parse(fs.readFileSync(tasksPath));
+    // const tasks = JSON.parse(fs.readFileSync(tasksPath));
+    const tasks = loadTasksFromFile();
     if (tasks.length < 1) {
       throw new Error(`No tasks found`);
     }
@@ -74,7 +76,8 @@ const markTaskComplete = (taskId) => {
 
     checkTasksFile();
 
-    const tasks = JSON.parse(fs.readFileSync(tasksPath));
+    // const tasks = JSON.parse(fs.readFileSync(tasksPath));
+    const tasks = loadTasksFromFile();
 
     const taskToUpdate = tasks.find((task) => task.id === taskId);
 
@@ -89,7 +92,7 @@ const markTaskComplete = (taskId) => {
       throw new Error(`There is no task with the ID of ${taskId}`);
     }
 
-    fs.writeFileSync(tasksPath, JSON.stringify(tasks));
+    saveTaskstoFile(tasksPath, tasks);
     console.log(`Task "${updatedTask.title}" marked as complete`);
 
     return updatedTask;
@@ -109,14 +112,16 @@ const deleteTask = (option) => {
 
       checkTasksFile();
 
-      const tasks = JSON.parse(fs.readFileSync(tasksPath));
+      // const tasks = JSON.parse(fs.readFileSync(tasksPath));
+      const tasks = loadTasksFromFile();
 
       const taskToDelete = tasks.find((task) => task.id === taskId);
 
       if (taskToDelete) {
         const filteredTasks = tasks.filter((task) => task.id !== taskId);
 
-        fs.writeFileSync(tasksPath, JSON.stringify(filteredTasks));
+        // fs.writeFileSync(tasksPath, JSON.stringify(filteredTasks));
+        saveTaskstoFile(tasksPath, filteredTasks);
 
         console.log(`Task "${taskToDelete.title}" deleted successfully`);
         return taskToDelete;
@@ -126,13 +131,15 @@ const deleteTask = (option) => {
     } else {
       // Handle deleting all tasks
       checkTasksFile();
-      const tasks = JSON.parse(fs.readFileSync(tasksPath));
+      // const tasks = JSON.parse(fs.readFileSync(tasksPath));
+      const tasks = loadTasksFromFile();
 
       if (tasks.length === 0) {
         throw new Error("No task currently in memory");
       }
 
-      fs.writeFileSync(tasksPath, JSON.stringify([]));
+      // fs.writeFileSync(tasksPath, JSON.stringify([]));
+      saveTaskstoFile(tasksPath, []);
       console.log("All tasks deleted successfully");
     }
   } catch (error) {
@@ -140,12 +147,12 @@ const deleteTask = (option) => {
   }
 };
 
-const saveTaskstoFile = () => {
-  
+const saveTaskstoFile = (tasksPath, tasks) => {
+  return fs.writeFileSync(tasksPath, JSON.stringify(tasks));
 };
 
 const loadTasksFromFile = () => {
-  
+  return JSON.parse(fs.readFileSync(tasksPath));
 };
 
 const checkTasksFile = () => {
@@ -159,6 +166,4 @@ module.exports = {
   getAllTasks,
   markTaskComplete,
   deleteTask,
-  saveTaskstoFile,
-  loadTasksFromFile,
 };

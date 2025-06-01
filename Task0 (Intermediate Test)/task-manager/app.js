@@ -2,8 +2,7 @@
 
 const readline = require("readline");
 const {
-  addTask, getAllTasks, markTaskComplete, deleteTask, saveTaskstoFile,
-  loadTasksFromFile } = require("./taskManager.js");
+  addTask, getAllTasks, markTaskComplete, deleteTask } = require("./taskManager.js");
 
 // CLI logic
 const args = process.argv.slice(2);
@@ -83,6 +82,10 @@ switch (command) {
     }
     break;
 
+  case "server":
+
+    break;
+  
   case "help":
     // displayHelp();
     break;

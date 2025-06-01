@@ -24,18 +24,7 @@ switch (command) {
 
   case "list":
     try {
-      if (args.length === 1 || args[1] === "all") {
-        getTasks("all");
-        process.exit(0);
-      }
-
-      if (!["done", "todo", "in-progress"].includes(args[1])) {
-        throw new Error(
-          "Invalid option provided to the 'list' command. valid options include: 'todo', 'done', 'in-progress'"
-        );
-      }
-
-      getTasks(args[1]);
+      getAllTasks();
     } catch (error) {
       console.log(error.message);
     }

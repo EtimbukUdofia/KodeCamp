@@ -33,7 +33,7 @@ const addTask = (title, description) => {
     tasks = [...tasks, newTask];
 
     fs.writeFileSync(tasksPath, JSON.stringify(tasks));
-    console.log("Task added successfully!\n", `ID: ${newTask.id}, Title: ${newTask.title}`);
+    console.log("Task added successfully!\n", `ID: ${newTask.id}, Title: "${newTask.title}"`);
     return newTask;
   } catch (error) {
     throw error;
@@ -41,7 +41,27 @@ const addTask = (title, description) => {
 };
 
 const getAllTasks = () => {
-  
+  try {
+    checkTasksFile();
+
+    const tasks = JSON.parse(fs.readFileSync(tasksPath));
+    if (tasks.length < 1) {
+      throw new Error(`No tasks found`);
+    }
+
+    tasks.forEach((task, index) => {
+      console.log(`
+=== Your Task${tasks.length > 1 ? 's' : ''} ===
+[${task.id}] ${task.title} (${task.completed === false ? 'Pending' : 'Completed'})
+    Description: ${task.description}
+    Created: ${task.createdAt}
+        `);
+    });
+    return tasks;
+
+  } catch (error) {
+    throw error;
+  }
 };
 
 const markTaskComplete = (taskId) => {
@@ -58,6 +78,12 @@ const saveTaskstoFile = () => {
 
 const loadTasksFromFile = () => {
   
+};
+
+const checkTasksFile = () => {
+  if (!fs.existsSync(tasksPath)) {
+    throw new Error("No task currently in memory");
+  }
 };
 
 module.exports = {

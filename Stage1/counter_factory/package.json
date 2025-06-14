@@ -1,0 +1,15 @@
+{
+  "name": "counter_factory",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --silent"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "common",
+  "description": "",
+  "devDependencies": {
+    "jest": "^30.0.0"
+  }
+}

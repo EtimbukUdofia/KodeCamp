@@ -125,7 +125,7 @@ const createAdvancedCounter = ({
 
   counter._getCount = () => count;
   counter._setCount = (value) => {
-    count = value;
+    count = Math.max(min, Math.min(max, value)); // This makes sure that the counter falls between the range -Infinity and Infinity
   };
   counter._getInitialValue = () => initialValue;
   counter._config = { initialValue, step, min, max };
@@ -134,6 +134,11 @@ const createAdvancedCounter = ({
 };
 
 module.exports = createCounter;
+
+
+//
+// EXAMPLES
+// 
 
 const counter1 = createCounter(3);
 const counter2 = createCounter(5);

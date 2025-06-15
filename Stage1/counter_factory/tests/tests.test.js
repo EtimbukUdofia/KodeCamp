@@ -1,4 +1,4 @@
-const createCounter = require("../index.js")
+const { createCounter, createAdvancedCounter } = require("../index.js");
 
 describe("Counter Factory Function", () => {
   test("should increment and decrement correctly", () => {
@@ -67,5 +67,40 @@ describe("Counter Factory Function", () => {
     snapshot.increment();
     expect(snapshot.getValue()).toBe(10);
     expect(counter.getValue()).toBe(9); // the original is not affected
+  });
+
+  test("createAdvancedCounter should not increment beyond max", () => {
+    const counter = createAdvancedCounter({ initialValue: 4, max: 5 });
+
+    expect(counter.getValue()).toBe(4);
+    counter.increment();
+    expect(counter.getValue()).toBe(5);
+
+    expect(() => counter.increment()).toThrow("Maximum value reached");
+    expect(counter.getValue()).toBe(5);
+  });
+
+  test("createAdvancedCounter should not decrement below min", () => {
+    const counter = createAdvancedCounter({ initialValue: 1, min: 0 });
+
+    expect(counter.getValue()).toBe(1);
+    counter.decrement();
+    expect(counter.getValue()).toBe(0);
+
+    expect(() => counter.decrement()).toThrow("Minimum value reached");
+    expect(counter.getValue()).toBe(0);
+  });
+
+  test("createAdvancedCounter should not transform below min or above max", () => {
+    const counter = createAdvancedCounter({ initialValue: 5, min: 0, max: 10 });
+
+    expect(() => counter.transform((x) => x + 6)).toThrow(
+      "Maximum value reached"
+    );
+    expect(() => counter.transform((x) => -5)).toThrow("Minimum value reached");
+
+    // safe transform
+    expect(counter.transform((x) => x + 2)).toBe(7);
+    expect(counter.getValue()).toBe(7);
   });
 });

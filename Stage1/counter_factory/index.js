@@ -119,26 +119,35 @@ const createAdvancedCounter = ({
   max = Infinity,
 } = {}) => {
   let count = initialValue;
-  originalValue = initialValue;
+  let originalValue = initialValue;
+  let history = [];
 
   const counter = Object.create(CounterPrototype);
 
   counter._getCount = () => count;
   counter._setCount = (value) => {
-    count = Math.max(min, Math.min(max, value)); // This makes sure that the counter falls between the range -Infinity and Infinity
+    if (value > max) {
+      throw new Error("Maximum value reached");
+    }
+
+    if (value < min) {
+      throw new Error("Minimum value reached");
+    }
+    count = value;
   };
-  counter._getInitialValue = () => initialValue;
+  counter._getInitialValue = () => originalValue;
+  counter._getHistory = () => history;
+  counter._setHistory = (value) => history.push(value);
   counter._config = { initialValue, step, min, max };
 
   return counter;
 };
 
-module.exports = createCounter;
-
+module.exports = { createCounter, createAdvancedCounter };
 
 //
 // EXAMPLES
-// 
+//
 
 const counter1 = createCounter(3);
 const counter2 = createCounter(5);
